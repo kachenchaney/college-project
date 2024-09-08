@@ -29,11 +29,28 @@ void menuUtama() {
     printf("Pilih menu: ");
 }
 
+// Fungsi untuk memastikan file ada atau membuat file kosong jika tidak ada
+void cekAtauBuatFile(const char *namaFile) {
+    FILE *file = fopen(namaFile, "r");
+    if (file == NULL) {
+        // Jika file tidak ada, buat file kosong
+        file = fopen(namaFile, "w");
+        if (file != NULL) {
+            printf("Membuat file kosong: %s\n", namaFile);
+            fclose(file);
+        } else {
+            printf("Gagal membuat file: %s\n", namaFile);
+        }
+    } else {
+        fclose(file);
+    }
+}
+
 // Fungsi untuk membaca data buku dari file
 void bacaDataBuku(Buku buku[], int *jumlahBuku) {
     FILE *file = fopen("databuku.txt", "r");
     if (file == NULL) {
-        printf("File tidak ditemukan!\n");
+        printf("File databuku.txt tidak ditemukan!\n");
         return;
     }
 
@@ -101,7 +118,7 @@ void deleteDataBuku(Buku buku[], int *jumlahBuku) {
 void bacaHistory(History history[], int *jumlahHistory) {
     FILE *file = fopen("datahistory.txt", "r");
     if (file == NULL) {
-        printf("File history tidak ditemukan!\n");
+        printf("File datahistory.txt tidak ditemukan!\n");
         return;
     }
 
@@ -156,6 +173,10 @@ int main() {
     int jumlahBuku = 0;
     int jumlahHistory = 0;
     int pilihan;
+
+    // Cek atau buat file databuku.txt dan datahistory.txt jika tidak ada
+    cekAtauBuatFile("databuku.txt");
+    cekAtauBuatFile("datahistory.txt");
 
     // Baca data buku dan history dari file
     bacaDataBuku(buku, &jumlahBuku);
