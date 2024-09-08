@@ -10,6 +10,13 @@ typedef struct {
     int harga;
 } Buku;
 
+// Struktur untuk menyimpan data penjualan (history)
+typedef struct {
+    char kode[10];
+    int jumlah;
+    int totalHarga;
+} History;
+
 // Fungsi untuk menampilkan menu utama
 void menuUtama() {
     printf("\n=== MENU UTAMA ===\n");
@@ -42,7 +49,7 @@ void simpanDataBuku(Buku buku[], int jumlahBuku) {
     FILE *file = fopen("databuku.txt", "w");
     if (file == NULL) {
         printf("Gagal membuka file untuk menyimpan data!\n");
-        return; // Tambahkan pengecekan jika file gagal dibuka
+        return;
     }
     for (int i = 0; i < jumlahBuku; i++) {
         fprintf(file, "%s %s %s %d\n", buku[i].kode, buku[i].nama, buku[i].jenis, buku[i].harga);
@@ -90,13 +97,69 @@ void deleteDataBuku(Buku buku[], int *jumlahBuku) {
     printf("Data buku berhasil dihapus!\n");
 }
 
+// Fungsi untuk membaca data history dari file
+void bacaHistory(History history[], int *jumlahHistory) {
+    FILE *file = fopen("datahistory.txt", "r");
+    if (file == NULL) {
+        printf("File history tidak ditemukan!\n");
+        return;
+    }
+
+    *jumlahHistory = 0;
+    while (fscanf(file, "%s %d %d", history[*jumlahHistory].kode, &history[*jumlahHistory].jumlah, &history[*jumlahHistory].totalHarga) != EOF) {
+        (*jumlahHistory)++;
+    }
+    fclose(file);
+}
+
+// Fungsi untuk menampilkan data history penjualan
+void viewHistory(History history[], int jumlahHistory) {
+    printf("\n=== DATA HISTORY ===\n");
+    for (int i = 0; i < jumlahHistory; i++) {
+        printf("%d. Kode Buku: %s, Jumlah: %d, Total Harga: %d\n", i + 1, history[i].kode, history[i].jumlah, history[i].totalHarga);
+    }
+}
+
+// Fungsi untuk menghapus data history berdasarkan index
+void deleteHistory(History history[], int *jumlahHistory) {
+    int index;
+    printf("\nPilih index history yang akan dihapus: ");
+    scanf("%d", &index);
+    if (index < 1 || index > *jumlahHistory) {
+        printf("Index tidak valid!\n");
+        return;
+    }
+
+    for (int i = index - 1; i < *jumlahHistory - 1; i++) {
+        history[i] = history[i + 1];
+    }
+    (*jumlahHistory)--;
+    printf("Data history berhasil dihapus!\n");
+}
+
+// Fungsi untuk menyimpan data history ke file
+void simpanHistory(History history[], int jumlahHistory) {
+    FILE *file = fopen("datahistory.txt", "w");
+    if (file == NULL) {
+        printf("Gagal membuka file untuk menyimpan data history!\n");
+        return;
+    }
+    for (int i = 0; i < jumlahHistory; i++) {
+        fprintf(file, "%s %d %d\n", history[i].kode, history[i].jumlah, history[i].totalHarga);
+    }
+    fclose(file);
+}
+
 int main() {
     Buku buku[100];
+    History history[100];
     int jumlahBuku = 0;
+    int jumlahHistory = 0;
     int pilihan;
 
-    // Baca data buku dari file
+    // Baca data buku dan history dari file
     bacaDataBuku(buku, &jumlahBuku);
+    bacaHistory(history, &jumlahHistory);
 
     while (1) {
         menuUtama();
@@ -107,22 +170,22 @@ int main() {
                 inputDataBuku(buku, &jumlahBuku);
                 break;
             case 2:
-                // Fitur View History belum diimplementasikan
-                printf("Fitur View History belum tersedia.\n");
+                viewHistory(history, jumlahHistory);
                 break;
             case 3:
                 viewDataBuku(buku, jumlahBuku);
                 break;
             case 4:
-                // Fitur Delete History belum diimplementasikan
-                printf("Fitur Delete History belum tersedia.\n");
+                deleteHistory(history, &jumlahHistory);
+                simpanHistory(history, jumlahHistory);
                 break;
             case 5:
                 deleteDataBuku(buku, &jumlahBuku);
                 break;
             case 6:
-                // Simpan data buku ke file dan keluar
+                // Simpan data buku dan history ke file dan keluar
                 simpanDataBuku(buku, jumlahBuku);
+                simpanHistory(history, jumlahHistory);
                 printf("Program selesai. Data disimpan.\n");
                 return 0;
             default:
