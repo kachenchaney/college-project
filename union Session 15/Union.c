@@ -42,7 +42,7 @@ int main() {
     return 0;
 }
 
-/*
+
 1. Penjelasan Program:
 
 Program ini adalah contoh penggunaan struktur (struct) dalam bahasa C untuk menyimpan dan menampilkan data mahasiswa. 
@@ -106,4 +106,4 @@ h) Keamanan:
 
 i) Efisiensi:
    - Program ini efisien untuk tugasnya yang sederhana. Untuk data mahasiswa dalam jumlah besar, struktur data yang lebih kompleks seperti array atau linked list mungkin lebih sesuai.
-//
+
